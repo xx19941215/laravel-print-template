@@ -1,6 +1,6 @@
 {
     "name": "xx19941215/laravel-print-template",
-    "description": "upload/download/view file with laravel framework",
+    "description": "Print template management package for Laravel framework",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -17,7 +17,7 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "laravel/framework": "*",
-        "oh86/laravel-http-tools": "*"
+        "oh86/laravel-http-tools": "^1.1"
     },
     "extra": {
         "laravel": {
