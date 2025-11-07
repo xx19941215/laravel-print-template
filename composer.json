@@ -1,0 +1,29 @@
+{
+    "name": "xx19941215/laravel-print-template",
+    "description": "upload/download/view file with laravel framework",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Xx19941215\\PrintTemplate\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "xiaoxiao",
+            "email": "857635782@qq.com"
+        }
+    ],
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "laravel/framework": "*",
+        "oh86/laravel-http-tools": "*"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Xx19941215\\PrintTemplate\\PrintTemplateServiceProvider"
+            ]
+        }
+    }
+}
