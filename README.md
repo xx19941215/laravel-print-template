@@ -6,11 +6,12 @@
 
 - 打印模板的创建、读取、更新、删除操作
 - 模板配置以JSON格式存储
-- 自动生成模板编码（DY+模板ID）
+- 自动生成模板编码（DY+四位数字格式）
 - 使用oh86/laravel-http-tools包构建标准化JSON响应
 - 支持软删除
 - 支持关联资源
-- 自动从认证Guard获取用户ID作为创建人和修改人
+- 支持组织ID隔离（多租户）
+- 自动从认证Guard获取用户ID和组织ID作为创建人和修改人信息
 - 支持预加载创建者和修改者用户信息
 
 ## 安装
@@ -29,23 +30,24 @@ php artisan migrate
 
 ## 配置
 
-发布配置文件后，可以在 `config/printtemplate.php` 中进行配置：
+发布配置文件后，可以在 `config/print_template.php` 中进行配置：
 
-- `user_model`: 用户模型类路径（默认: App\Models\User）
+- `user_model`: 用户模型类路径（默认: App\Models\Admin）
 - `routes`: API路由配置
 
 可以通过环境变量设置用户模型类路径：
 ```env
-PRINT_TEMPLATE_USER_MODEL=App\\Models\\User
+PRINT_TEMPLATE_USER_MODEL=App\\Models\\Admin
 ```
 
 ## 数据库结构
 
 打印模板表包含以下字段：
 - `id`: 主键
+- `org_id`: 组织ID（用于多租户隔离）
 - `assoc_type`: 关联资源类型
 - `assoc_id`: 关联资源ID
-- `code`: 模板编码
+- `code`: 模板编码（DY+四位数字格式）
 - `name`: 模板名称
 - `config`: 模板配置(JSON格式)
 - `creator_id`: 创建人ID
@@ -62,6 +64,8 @@ PRINT_TEMPLATE_USER_MODEL=App\\Models\\User
 GET /printTemplate/list
 ```
 参数：
+- offset: 偏移量（必填）
+- limit: 限制数量（必填）
 - assoc_type: 关联资源类型（可选）
 - assoc_id: 关联资源ID（可选）
 - name: 模板名称（模糊搜索，可选）
@@ -78,9 +82,10 @@ GET /printTemplate/list
         "list": [
             {
                 "id": 1,
+                "org_id": 1,
                 "assoc_type": null,
                 "assoc_id": null,
-                "code": "DY1",
+                "code": "DY0001",
                 "name": "销售合同模板",
                 "config": {
                     "template": "<html>...</html>",
@@ -116,12 +121,12 @@ GET /printTemplate/list
 POST /printTemplate/create
 ```
 参数：
-- assoc_type: 关联资源类型（可选）
+- assoc_type: 关联资源类型（必填）
 - assoc_id: 关联资源ID（可选）
 - name: 模板名称（必填）
-- config: 模板配置（JSON格式，可选）
+- config: 模板配置（数组格式，可选）
 
-注意：creator_id和modifier_id字段会自动从认证Guard中获取当前用户ID。
+注意：org_id、creator_id和modifier_id字段会自动从认证Guard中获取当前用户信息。
 
 ### 获取模板详情
 ```
@@ -134,14 +139,14 @@ GET /printTemplate
 
 ### 更新模板
 ```
-POST /printTemplate
+POST /printTemplate/update
 ```
 参数：
 - id: 模板ID（必填）
-- assoc_type: 关联资源类型（可选）
+- assoc_type: 关联资源类型（必填）
 - assoc_id: 关联资源ID（可选）
 - name: 模板名称（必填）
-- config: 模板配置（JSON格式，可选）
+- config: 模板配置（数组格式，可选）
 
 注意：modifier_id字段会自动从认证Guard中获取当前用户ID。
 
@@ -181,6 +186,7 @@ use Xx19941215\PrintTemplate\Models\PrintTemplate;
 
 // 创建模板
 $template = new PrintTemplate();
+$template->assoc_type = 'contract';
 $template->name = '销售合同模板';
 $template->config = [
     'template' => '<html><body>销售合同模板内容</body></html>',
@@ -189,16 +195,16 @@ $template->config = [
         'paper_size' => 'A4'
     ]
 ];
-// creator_id和modifier_id会自动设置
+// org_id、creator_id和modifier_id会自动设置
 $template->modified_at = now();
 $template->save();
 
 // 自动生成编码
-$template->code = 'DY' . $template->id;
+$template->code = PrintTemplate::genCode($orgId);
 $template->save();
 
 // 获取模板编码
-echo $template->code; // 输出: DY1
+echo $template->code; // 输出: DY0001
 
 // 获取模板列表（包含创建者和修改者信息）
 $templates = PrintTemplate::with(['creator', 'modifier'])->get();
