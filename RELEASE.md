@@ -1,8 +1,8 @@
-# Laravel Print Template Package v1.0.0
+# Laravel Print Template Package v1.0.1
 
 ## Overview
 
-This is the first official release of the Laravel Print Template package. This package provides a complete CRUD management system for print templates in Laravel applications.
+This is the second official release of the Laravel Print Template package. This package provides a complete CRUD management system for print templates in Laravel applications.
 
 ## Features
 
@@ -15,6 +15,7 @@ This is the first official release of the Laravel Print Template package. This p
 - Organization ID isolation (multi-tenancy)
 - Automatic user and organization ID assignment from auth guard
 - Creator and modifier relationship support with optional eager loading
+- Support for array format HTTP methods in route configuration
 
 ## Installation
 
@@ -43,6 +44,10 @@ php artisan migrate
 - oh86/laravel-http-tools ^1.1
 
 ## Changelog
+
+### v1.0.1 (2025-11-11)
+
+- feat(route): support array format for HTTP methods in route configuration
 
 ### v1.0.0 (2025-11-07)
 
