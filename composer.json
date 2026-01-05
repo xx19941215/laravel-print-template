@@ -3,7 +3,7 @@
     "description": "Print template management package for Laravel framework",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "autoload": {
         "psr-4": {
             "Xx19941215\\PrintTemplate\\": "src/"
