@@ -59,6 +59,7 @@ class PrintTemplate extends Model
             ->where('org_id', $org_id)
             ->where('code', 'like', 'DY%')
             ->orderByDesc('code')
+            ->select('code')
             ->first();
 
         // 提取数字部分，转为 int，+1
