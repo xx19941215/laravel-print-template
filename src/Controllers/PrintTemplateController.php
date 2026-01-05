@@ -69,6 +69,20 @@ class PrintTemplateController extends Controller
         $list = $builder->orderBy('modified_at', 'desc')
             ->offset($request->offset)
             ->limit($request->limit)
+            ->select([
+                'id',
+                'org_id',
+                'assoc_type',
+                'assoc_id',
+                'code',
+                'name',
+                'creator_id',
+                'modifier_id',
+                'modified_at',
+                'created_at',
+                'deleted_at',
+                'updated_at',
+            ])
             ->get();
 
         return new OkResponse(compact('total', 'list'));
